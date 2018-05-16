@@ -555,7 +555,7 @@ class Fresque
         $this->debug('Searching for active workers');
         $options = new SendSignalCommandOptions();
         $options->title = 'Stopping workers';
-        $options->noWorkersMessage = 'There is no workers to stop';
+        $options->noWorkersMessage = 'There are no workers to stop';
         $options->allOption = 'Stop all workers';
         $options->selectMessage = 'Worker to stop';
         $options->actionMessage = 'stopping';
@@ -593,7 +593,7 @@ class Fresque
         $this->debug('Searching for active workers');
         $options = new SendSignalCommandOptions();
         $options->title = 'Pausing workers';
-        $options->noWorkersMessage = 'There is no workers to pause';
+        $options->noWorkersMessage = 'There are no workers to pause';
         $options->allOption = 'Pause all workers';
         $options->selectMessage = 'Worker to pause';
         $options->actionMessage = 'pausing';
@@ -619,7 +619,7 @@ class Fresque
         $this->debug('Searching for paused workers');
         $options = new SendSignalCommandOptions();
         $options->title = 'Resuming workers';
-        $options->noWorkersMessage = 'There is no paused workers to resume';
+        $options->noWorkersMessage = 'There are no paused workers to resume';
         $options->allOption = 'Resume all workers';
         $options->selectMessage = 'Worker to resume';
         $options->actionMessage = 'resuming';
@@ -706,6 +706,11 @@ class Fresque
                 $worker = $options->workers[$index - 1];
 
                 list($hostname, $pid, $queue) = explode(':', (string)$worker);
+
+                //if a queue was provided only stop workers in that queue instead of a 'global all'
+                if (!empty($this->runtime['Default']['queue']) && $this->runtime['Default']['queue'] != $queue) {
+                    continue;
+                }
 
                 $this->debug('Sending -' . $options->signal . ' signal to process ID ' . $pid);
 
